@@ -18,8 +18,13 @@ export async function createViteServer(options: Options, devServer: Server) {
     server: {
       allowedHosts,
       middlewareMode: true,
+      // Vite doesn't listen on this port in middleware mode. The HMR client only uses it as the
+      // direct fallback target when the page-derived WebSocket connection fails.
+      port: options.port,
+      // HMR shares Storybook's HTTP server. Leaving `hmr.port` unset lets the Vite client derive
+      // the WebSocket host and port from the page URL, so HMR also works behind reverse proxies
+      // that serve Storybook on a different port.
       hmr: {
-        port: options.port,
         server: devServer,
       },
       fs: {
